@@ -1,0 +1,10 @@
+[package]
+name = "wokwi_chip_ll"
+version = "0.1.0"
+edition = "2021"
+authors = ["Uri <uri@wokwi.com>"]
+description = "Wokwi Custom Chip API for Rust"
+repository = "https://github.com/wokwi/wokwi_chip_ll"
+license = "MIT"
+
+[dependencies]
