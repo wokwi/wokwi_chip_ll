@@ -59,10 +59,12 @@ pub struct SPIConfig {
     pub done: *const c_void,
 }
 
-/* Just a stub to specify the Chip API version */
+/// # Safety
+///
+/// Just a stub to specify the Chip API version.
 #[no_mangle]
 pub unsafe extern "C" fn __wokwi_api_version_1() -> u32 {
-    return 1;
+    1
 }
 
 extern "C" {
