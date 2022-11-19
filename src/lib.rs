@@ -6,6 +6,7 @@
 
 use std::{ffi::c_void, os::raw::c_char};
 
+/// Opaque pin identifier, returned by `pinInit()`
 pub type PinId = i32;
 pub type TimerId = u32;
 pub type UARTDevId = u32;
@@ -14,10 +15,14 @@ pub type SPIDevId = u32;
 pub type AttrId = u32;
 pub type BufferId = u32;
 
+/// Configuration for pinWatch()
 #[repr(C)]
 pub struct WatchConfig {
+    /// Data that will be passed in the first argument to pin_change
     pub user_data: *const c_void,
+    /// What pin changes we listen for (`RISING`, `FALLING` or `BOTH`)
     pub edge: u32,
+    /// Called when the pin value changes
     pub pin_change: *const c_void,
 }
 
@@ -63,17 +68,50 @@ pub struct SPIConfig {
 ///
 /// Just a stub to specify the Chip API version.
 #[no_mangle]
+#[doc(hidden)]
 pub unsafe extern "C" fn __wokwi_api_version_1() -> u32 {
     1
 }
 
 extern "C" {
     /* Pin API */
+
+    /// Initializes the given pin, and returns a pin indentifier for use with the other pin methods.
+    ///
+    /// The `mode` parameters configures the initial state of the pin.
+    /// The following values are available:
+    /// - [`INPUT`] - configures the pin as a digital input
+    /// - [`INPUT_PULLUP`] - configures the pin as a digital input, and attached a pull-up register to the pin.
+    /// - [`INPUT_PULLDOWN`] - configures the pin as a digital input, and attached a pull-down register to the pin.
+    /// - [`OUTPUT`] - configures the pin as a digital output
+    /// - [`OUTPUT_LOW`] - configures the pin as a digital output, sets the value of the pin to LOW
+    /// - [`OUTPUT_HIGH`] - configures the pin as a digital output, sets the value of the pin to HIGH
+    /// - [`ANALOG`] - configures the pin as an Analog pin. See the "Analog API" section below.
+    ///
+    /// Note: `pinInit()` can only be called from `chip_init()`. Do not call it at a later time.
     pub fn pinInit(name: *const c_char, mode: u32) -> PinId;
+
+    /// Configures the given `pin` as digital input or output.
+    ///
+    /// The valid values for `mode` are the same as [pinInit()]: [`INPUT`],
+    /// [`INPUT_PULLUP`], [`INPUT_PULLDOWN`], [`OUTPUT`], [`OUTPUT_LOW`], [`OUTPUT_HIGH`], and [`ANALOG`].
     pub fn pinMode(pin: PinId, mode: u32);
+
+    /// Reads the current digital value of the pin, returns either `LOW` or `HIGH`.
     pub fn pinRead(pin: PinId) -> u32;
+
+    /// Set the output value for a digital pin. Use the `LOW` and `HIGH` constants for `value`.
     pub fn pinWrite(pin: PinId, value: u32);
+
+    /// Listens for changes in the digital value of the given pin.
+    ///
+    /// You can only have one watch for a pin at any given time.
+    /// The function returns true if the watch was successfully set,
+    /// or false in case there is already a watch defined for this pin
+    /// (and thus the new watch was not set).
     pub fn pinWatch(pin: PinId, watch_config: *const WatchConfig) -> bool;
+
+    /// Stops watching for changes on the given pin.
     pub fn pinWatchStop(pin: PinId);
 
     /* Analog API */
