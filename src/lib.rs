@@ -15,12 +15,12 @@ pub type SPIDevId = u32;
 pub type AttrId = u32;
 pub type BufferId = u32;
 
-/// Configuration for pinWatch()
+/// Configuration for [pinWatch()]
 #[repr(C)]
 pub struct WatchConfig {
     /// Data that will be passed in the first argument to pin_change
     pub user_data: *const c_void,
-    /// What pin changes we listen for (`RISING`, `FALLING` or `BOTH`)
+    /// What pin changes we listen for ([`RISING`], [`FALLING`] or [`BOTH`])
     pub edge: u32,
     /// Called when the pin value changes
     pub pin_change: *const c_void,
