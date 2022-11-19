@@ -70,6 +70,7 @@ pub unsafe extern "C" fn __wokwi_api_version_1() -> u32 {
 extern "C" {
     /* Pin API */
     pub fn pinInit(name: *const c_char, mode: u32) -> PinId;
+    pub fn pinMode(pin: PinId, mode: u32);
     pub fn pinRead(pin: PinId) -> u32;
     pub fn pinWrite(pin: PinId, value: u32);
     pub fn pinWatch(pin: PinId, watch_config: *const WatchConfig) -> bool;
