@@ -126,7 +126,7 @@ extern "C" {
     pub fn timerStop(timer: TimerId);
 
     /* UART API */
-    pub fn uartInit(config: UARTConfig) -> UARTDevId;
+    pub fn uartInit(config: *const UARTConfig) -> UARTDevId;
     pub fn uartWrite(dev: UARTDevId, buffer: *const u8, count: u32) -> bool;
 
     /* I2C Device API */
