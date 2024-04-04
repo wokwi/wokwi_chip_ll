@@ -164,7 +164,7 @@ pub const INPUT_PULLUP: u32 = 2;
 pub const INPUT_PULLDOWN: u32 = 3;
 pub const ANALOG: u32 = 4;
 pub const OUTPUT_LOW: u32 = 16;
-pub const OUTPUT_HIGH: u32 = 16;
+pub const OUTPUT_HIGH: u32 = 17;
 
 /* Pin edges */
 pub const RISING: u32 = 1;
