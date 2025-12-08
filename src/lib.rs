@@ -23,45 +23,71 @@ pub struct WatchConfig {
     /// What pin changes we listen for ([`RISING`], [`FALLING`] or [`BOTH`])
     pub edge: u32,
     /// Called when the pin value changes
-    pub pin_change: *const c_void,
+    pub pin_change: extern "C" fn(user_data: *mut c_void, pin: PinId, value: u32),
 }
 
 #[repr(C)]
+/// Defines the callback for the timer
 pub struct TimerConfig {
+    /// Data that will be passed in the first argument to the callback
     pub user_data: *const c_void,
-    pub callback: *const c_void,
+    /// Called when the timer fires
+    pub callback: extern "C" fn(user_data: *mut c_void),
 }
 
 #[repr(C)]
+/// Defines the pins, configuration, and callbacks for the UART device
 pub struct UARTConfig {
+    /// Data that will be passed in the first argument of the callbacks
     pub user_data: *const c_void,
+    /// The RX pin (or NO_PIN to disable RX)
     pub rx: PinId,
+    /// The TX pin (or NO_PIN to disable TX)
     pub tx: PinId,
+    /// The baud rate (e.g. 115200)
     pub baud_rate: u32,
-    pub rx_data: *const c_void,
-    pub write_done: *const c_void,
+    /// Called for each byte received on the RX pin
+    pub rx_data: extern "C" fn(user_data: *mut c_void, byte: u8),
+    /// Called when data transmission on the TX pin has finished
+    pub write_done: extern "C" fn(user_data: *mut c_void),
 }
 
 #[repr(C)]
+/// Defines the pins, address, and callbacks for the I2C device
 pub struct I2CConfig {
+    /// Data that will be passed in the first argument of the callbacks
     pub user_data: *const c_void,
+    /// Listen for requests matching the given I2C address (7-bit). To listen for all requests, set to 0
     pub address: u32,
+    /// The SCL pin
     pub scl: PinId,
+    /// The SDA pin
     pub sda: PinId,
-    pub connect: *const c_void,
-    pub read: *const c_void,
-    pub write: *const c_void,
-    pub disconnect: *const c_void,
+    /// Called when the chip is addressed on the I2C bus
+    pub connect: extern "C" fn(user_data: *mut c_void, address: u32, connect: bool) -> bool,
+    /// Called when the microcontroller wants to read a byte of data from your chip
+    pub read: extern "C" fn(user_data: *mut c_void) -> u8,
+    /// Called when the microcontroller writes a byte to your chip
+    pub write: extern "C" fn(user_data: *mut c_void, data: u8) -> bool,
+    /// Called when the microcontroller disconnects from your chip
+    pub disconnect: extern "C" fn(user_data: *mut c_void),
 }
 
 #[repr(C)]
+/// Defines the pins, mode, and callbacks for the SPI device
 pub struct SPIConfig {
+    /// Data that will be passed in the first argument of the done callback
     pub user_data: *const c_void,
+    /// The clock pin
     pub sck: PinId,
+    /// The MOSI data pin (or NO_PIN to disable MOSI)
     pub mosi: PinId,
+    /// The MISO data pin (or NO_PIN to disable MISO)
     pub miso: PinId,
+    /// SPI mode: 0, 1, 2, or 3 (default: 0)
     pub mode: u32,
-    pub done: *const c_void,
+    /// Called when an SPI transaction finishes
+    pub done: extern "C" fn(user_data: *mut c_void, buffer: *mut u8, count: u32),
 }
 
 /// # Safety
